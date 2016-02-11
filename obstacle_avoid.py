@@ -36,31 +36,31 @@ def get_distance(lat_1, lon_1, lat_2, lon_2):
 	output: dictionary with 'x' and 'y' keys, distances in meters
 	"""
 
-    e_radii = get_earth_radii(lat)
+	e_radii = get_earth_radii(lat)
     
-    x_dist = radius * sin(yaw - pi / 2)
-    y_dist = radius * cos(yaw - pi / 2)
+	x_dist = radius * sin(yaw - pi / 2)
+	y_dist = radius * cos(yaw - pi / 2)
         
-    wp_lat = y_dist / e_radii[0] + lat
-    wp_lon = x_dist / e_radii[1] / cos(lat) + lon
+	wp_lat = y_dist / e_radii[0] + lat
+	wp_lon = x_dist / e_radii[1] / cos(lat) + lon
 
 def get_waypoint(lat, lon, bearing, radius):
-    """Returns the coorinate at a distance 'radius' and at the bearing from an obstacle at
-    (lat, lon).
+	"""Returns the coorinate at a distance 'radius' and at the bearing from an obstacle at
+	(lat, lon).
     
-    input: lat, lon, bearing in radians and radius in meters.
-    output: dictionary with "lat" and "lon" inside, lat and lon in radians.
-    """
+	input: lat, lon, bearing in radians and radius in meters.
+	output: dictionary with "lat" and "lon" inside, lat and lon in radians.
+	"""
 
-    e_radii = get_earth_radii(lat)
+	e_radii = get_earth_radii(lat)
 
-    x_dist = radius * sin(bearing)
-    y_dist = radius * cos(bearing)
+	x_dist = radius * sin(bearing)
+	y_dist = radius * cos(bearing)
 
-    wp_lat = y_dist / e_radii[0] + lat
-    wp_lon = x_dist / e_radii[1] / cos(lat) + lon
+	wp_lat = y_dist / e_radii[0] + lat
+	wp_lon = x_dist / e_radii[1] / cos(lat) + lon
 
-    return {'lat': wp_lat, 'lon': wp_lon}
+	return {'lat': wp_lat, 'lon': wp_lon}
 
 def get_left_waypoint(lat, lon, yaw, radius):
 	"""Returns the coordinate the plane would go to if it dodged dead left of an obstacle
@@ -73,14 +73,14 @@ def get_left_waypoint(lat, lon, yaw, radius):
 	return get_waypoint(lat, lon, yaw - pi / 2, radius)
             
 def get_right_waypoint(lat, lon, yaw, radius):
-    """Returns the coordinate the plane would go to if it dodged dead right of an obstacle
-    at (lat, lon) at a distance 'radius'.
+	"""Returns the coordinate the plane would go to if it dodged dead right of an obstacle
+	at (lat, lon) at a distance 'radius'.
         
-    input: lat, lon, yaw in radians and radius in meters.
-    output: dictionary with "lat" and "lon" inside, lat and lon in radians.
-    """
+	input: lat, lon, yaw in radians and radius in meters.
+	output: dictionary with "lat" and "lon" inside, lat and lon in radians.
+	"""
                         
-    return get_waypoint(lat, lon, yaw + pi / 2, radius)
+	return get_waypoint(lat, lon, yaw + pi / 2, radius)
 
 def get_bearing(lat_1, lon_1, lat_2, lon_2):
 	"""Returns the bearing from (lat_1, lon_1) to (lat_2, lon_2) using the flat earth
