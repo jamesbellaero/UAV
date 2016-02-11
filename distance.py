@@ -8,12 +8,12 @@ from math import sin, cos, tan, sqrt, pi
 
 def get_earth_radii(lat):
     """Returns meridional radius of curvature and the radius of curvature in the prime
-        vertical, r_1 and r_2, respectively used for the flat earth approximation. r_1 and r_2
-        are returned in a tuple, with r_1 first.
+    vertical, r_1 and r_2, respectively used for the flat earth approximation. r_1 and r_2
+    are returned in a tuple, with r_1 first.
         
-        input: lat is in radians
-        output: (r_1, r_2) is in meters
-        """
+    input: lat is in radians
+    output: (r_1, r_2) is in meters
+    """
     
     a = 6378137
     f = 1 / 298.257223563
