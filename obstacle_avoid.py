@@ -1,5 +1,4 @@
-"""
-Handles the obstacle avoidance system for the UAV.
+"""Handles the obstacle avoidance system for the UAV.
 
 Uses the flat earth approximation to convert latitudes and longitudes into distances, see
 http://williams.best.vwh.net/avform.htm#flat for details.
@@ -7,55 +6,8 @@ http://williams.best.vwh.net/avform.htm#flat for details.
 Note that latitudes and longitudes are expressed in radians and distances are in meters.
 """
 
-from math import sin, cos, atan2, sqrt, pi
-
-def get_earth_radii(lat):
-    """Returns meridional radius of curvature and the radius of curvature in the prime
-    vertical, r_1 and r_2, respectively used for the flat earth approximation. r_1 and r_2
-    are returned in a tuple, with r_1 first.
-    
-    input: lat is in radians
-    output: (r_1, r_2) is in meters
-    """
-    
-    a = 6378137
-    f = 1 / 298.257223563
-    e = f * (2 - f)
-    
-    r_1 = a * (1 - e) / (1 - e * sin(lat) ** 2) ** (3 / 2)
-    r_2 = a / sqrt(1 - e * sin(lat) ** 2)
-    
-    return r_1, r_2
-
-def get_magnitude(*args):
-    """Returns the distance given x and y coordinates or x, y, and z"""
-    
-    sum = 0
-    
-    for num in args:
-        sum += num ** 2
-    
-    return sqrt(sum)
-
-def get_linear_distance(lat_1, lon_1, alt_1, lat_2, lon_2, alt_2):
-    """Returns the distance between the two sets of coordinates using the flat earth
-    approximation. (lat_1, lon_1, alt_1) is used as the reference point to approximate the
-    distance. The output is a dictionary with the x, y, z component distances and the
-    magnitude.
-    
-    input: lat_1, lon_1, lat_2, lon_2 in radians, alt_1 and alt_2 in meters
-    output: dictionary with 'x', 'y', 'z', and 'mag' keys, distances in meters
-    """
-    
-    e_radii = get_earth_radii(lat_1)
-    
-    x_dist = e_radii[1] * cos(lat_1) * (lon_2 - lon_1)
-    y_dist = e_radii[0] * (lat_2 - lat_1)
-    z_dist = alt_2 - alt_1
-    
-    mag = get_magnitude(x_dist, y_dist, z_dist)
-    
-    return {'x': x_dist, 'y': y_dist, 'z': z_dist, 'mag': mag}
+from math import sin, cos, atan2, pi
+from distance import get_earth_radii, get_linear_distance
 
 def get_waypoint(lat, lon, alt, bearing, radius):
     """Returns the coordinate at a distance 'radius' and at the bearing from an obstacle
