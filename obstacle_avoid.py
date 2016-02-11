@@ -9,7 +9,7 @@ Note that latitudes and longitudes are expressed in radians and distances are in
 from math import sin, cos, atan2, pi
 from distance import get_earth_radii, get_linear_distance
 
-def get_waypoint(lat, lon, alt, bearing, radius):
+def _get_waypoint(lat, lon, alt, bearing, radius):
     """Returns the coordinate at a distance 'radius' and at the bearing from an obstacle
     at (lat, lon) with the plane going through the waypoint at altitude 'alt'.
     

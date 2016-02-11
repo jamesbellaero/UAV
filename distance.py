@@ -24,7 +24,7 @@ def get_earth_radii(lat):
     
     return r_1, r_2
 
-def get_magnitude(*args):
+def _get_magnitude(*args):
     """Returns the distance given x and y coordinates or x, y, and z"""
     
     sum = 0
@@ -34,7 +34,7 @@ def get_magnitude(*args):
     
     return sqrt(sum)
 
-def get_turning_radius(airspeed):
+def _get_turning_radius(airspeed):
     """Returns the turning radius for the plane traveling at true airspeed 'airspeed'
     while banking.
     
@@ -63,7 +63,7 @@ def get_linear_distance(lat_1, lon_1, alt_1, lat_2, lon_2, alt_2):
     y_dist = e_radii[0] * (lat_2 - lat_1)
     z_dist = alt_2 - alt_1
     
-    mag = get_magnitude(x_dist, y_dist, z_dist)
+    mag = _get_magnitude(x_dist, y_dist, z_dist)
     
     return {'x': x_dist, 'y': y_dist, 'z': z_dist, 'mag': mag}
 
