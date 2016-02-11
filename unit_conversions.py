@@ -44,7 +44,6 @@ def dms_to_deg(dms):
     """
 
     values = split('[^0-9.]+', dms[:-1])
-    print values
 
     return (-1 if dms[-1] in ['S', 'W'] else 1) * (float(values[0]) + float(values[1]) /
             60 + float(values[2]) / 3600)
