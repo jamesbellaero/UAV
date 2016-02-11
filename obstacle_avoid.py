@@ -38,7 +38,7 @@ def get_left_waypoint(lat, lon, yaw, radius):
     meters.
     """
     
-    return get_waypoint(lat, lon, alt, yaw - pi / 2, radius)
+    return _get_waypoint(lat, lon, alt, yaw - pi / 2, radius)
     
 def get_right_waypoint(lat, lon, yaw, radius):
     """Returns the coordinate the plane would go to if it dodged dead right of an obstacle
@@ -50,7 +50,7 @@ def get_right_waypoint(lat, lon, yaw, radius):
     meters.
     """
 
-    return get_waypoint(lat, lon, alt, yaw + pi / 2, radius)
+    return _get_waypoint(lat, lon, alt, yaw + pi / 2, radius)
     
 def get_bearing(lat_1, lon_1, lat_2, lon_2):
     """Returns the bearing from (lat_1, lon_1) to (lat_2, lon_2) using the flat earth
