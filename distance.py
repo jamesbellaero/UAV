@@ -1,7 +1,7 @@
 """Handles computing the distance between two waypoints, with some functions taking in
 consideration turning to go to the next waypoint.
 
-Note that distances are in meters and anlges are in radians.
+Note that distances are in meters and angles are in radians.
 """
 
 from math import sin, cos, tan, sqrt, pi
