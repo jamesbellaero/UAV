@@ -8,6 +8,12 @@ Note that latitudes and longitudes are expressed in radians and distances are in
 
 from math import sin, cos, atan2, pi
 from distance import get_earth_radii, get_linear_distance
+from collections import namedtuple
+
+# Named tuple so that obstacles can have their information represented by string. If the
+# obstacle is a sphere, height = -1.
+# Ex: obs = Obstacle(lat = 5, lon = 2, alt = 40, -1, 20
+Obstacle = namedtuple('Obstacle', 'lat, lon, alt, height, radius')
 
 def _get_waypoint(lat, lon, alt, bearing, radius):
     """Returns the coordinate at a distance 'radius' and at the bearing from an obstacle

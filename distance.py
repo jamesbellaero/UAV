@@ -5,6 +5,7 @@ Note that distances are in meters and angles are in radians.
 """
 
 from math import sin, cos, tan, sqrt, pi
+from constants import EARTH_RADIUS, EARTH_ECCEN, ACCEL_GRAV, BANKING_ANGLE
 
 def get_earth_radii(lat):
     """Returns meridional radius of curvature and the radius of curvature in the prime
@@ -15,12 +16,9 @@ def get_earth_radii(lat):
     output: (r_1, r_2) is in meters
     """
     
-    a = 6378137
-    f = 1 / 298.257223563
-    e = f * (2 - f)
-    
-    r_1 = a * (1 - e) / (1 - e * sin(lat) ** 2) ** (3 / 2)
-    r_2 = a / sqrt(1 - e * sin(lat) ** 2)
+    r_1 = (EARTH_RADIUS * (1 - EARTH_ECCEN ** 2) /
+           (1 - EARTH_ECCEN ** 2 * sin(lat) ** 2) ** (3 / 2))
+    r_2 = EARTH_RADIUS / sqrt(1 - EARTH_ECCEN ** 2 * sin(lat) ** 2)
     
     return r_1, r_2
 
@@ -42,10 +40,7 @@ def _get_turning_radius(airspeed):
     output: turning radius in radians.
     """
 
-    g = 9.8
-    bank_angle = pi / 6 #TODO determine bank angle
-
-    return airspeed ** 2 / g / tan(bank_angle)
+    return airspeed ** 2 / ACCEL_GRAV / tan(BANKING_ANGLE)
 
 def get_linear_distance(lat_1, lon_1, alt_1, lat_2, lon_2, alt_2):
     """Returns the distance between the two sets of coordinates using the flat earth
