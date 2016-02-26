@@ -6,6 +6,7 @@ Note that distances are in meters and angles are in radians.
 
 from math import sin, cos, tan, sqrt, pi
 from constants import EARTH_RADIUS, EARTH_ECCEN, ACCEL_GRAV, BANKING_ANGLE
+from obstacle_avoid import Distance
 
 def get_earth_radii(lat):
     """Returns meridional radius of curvature and the radius of curvature in the prime
@@ -22,15 +23,10 @@ def get_earth_radii(lat):
     
     return r_1, r_2
 
-def _get_magnitude(*args):
-    """Returns the distance given x and y coordinates or x, y, and z"""
-    
-    sum = 0
-    
-    for num in args:
-        sum += num ** 2
-    
-    return sqrt(sum)
+def _get_magnitude(dist):
+    """Returns the magnitude given a vector."""
+
+    return sqrt(sum(dist))
 
 def _get_turning_radius(airspeed):
     """Returns the turning radius for the plane traveling at true airspeed 'airspeed'
@@ -42,25 +38,22 @@ def _get_turning_radius(airspeed):
 
     return airspeed ** 2 / ACCEL_GRAV / tan(BANKING_ANGLE)
 
-def get_linear_distance(lat_1, lon_1, alt_1, lat_2, lon_2, alt_2):
+def get_linear_distance(wp_1, wp_2):
     """Returns the distance between the two sets of coordinates using the flat earth
-    approximation. (lat_1, lon_1, alt_1) is used as the reference point to approximate the
-    distance. The output is a dictionary with the x, y, z component distances and the
-    magnitude.
+    approximation. wp_1 is used as the reference point to approximate the distance. The
+    output is the Distance namedtuple.
     
-    input: lat_1, lon_1, lat_2, lon_2 in radians, alt_1 and alt_2 in meters
-    output: dictionary with 'x', 'y', 'z', and 'mag' keys, distances in meters
+    input: wp_1 and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters
+    output: Distance namedtuple, x, y, and z, in meters
     """
     
-    e_radii = get_earth_radii(lat_1)
+    e_radii = get_earth_radii(wp_1.lat)
     
-    x_dist = e_radii[1] * cos(lat_1) * (lon_2 - lon_1)
-    y_dist = e_radii[0] * (lat_2 - lat_1)
-    z_dist = alt_2 - alt_1
+    x_dist = e_radii[1] * cos(wp_1.lat) * (wp_2.lon - wp_1.lon)
+    y_dist = e_radii[0] * (wp_2.lat - wp_1.lat)
+    z_dist = wp_2.alt - wp_1.alt
     
-    mag = _get_magnitude(x_dist, y_dist, z_dist)
-    
-    return {'x': x_dist, 'y': y_dist, 'z': z_dist, 'mag': mag}
+    return Distance(x = x_dist, y = y_dist, z = z_dist)
 
 #TODO def get_circular_distance()
 
