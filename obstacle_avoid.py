@@ -68,7 +68,7 @@ def get_bearing(wp_1, wp_2):
     
     North: 0 rad, East: pi / 2 rad, South: pi rad, West: 3 * pi / 2 rad
     
-    input: lat_1, lon_1, lat_2, lon_2 in radians
+    input: wp_1 and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters
     output: bearing in radians
     """
     

@@ -44,7 +44,7 @@ def get_linear_distance(wp_1, wp_2):
     output is the Distance namedtuple.
     
     input: wp_1 and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters
-    output: Distance namedtuple, x, y, and z, in meters
+    output: Distance namedtuple, x, y, and z in meters
     """
     
     e_radii = get_earth_radii(wp_1.lat)
@@ -54,6 +54,25 @@ def get_linear_distance(wp_1, wp_2):
     z_dist = wp_2.alt - wp_1.alt
     
     return Distance(x = x_dist, y = y_dist, z = z_dist)
+
+def get_Distance_Plane(wp_plane, wp_2, bearing):
+    """Returns the distance from the nose of the plane to a waypoint with a given bearing.
+    The x coordinate is the distance to the left and right of the plane in the direction
+    of the nose, the y coordinate is how far in front of the plane, and the z coordinate
+    is how far above or below the plane.
+    
+    input: wp_plane and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters,
+        bearing in radians
+    output: Distance namedtuple, x, y, and z in meters
+    """
+    
+    dist = get_linear_distance(wp_plane, wp_2)
+
+    i = dist.x * cos(bearing) - dist.y * sin(bearing)
+    j = dist.x * sin(bearing) + dist.y * cos(bearing)
+    k = dist.z
+
+    return Distance(x = i, y = j, z = k)
 
 #TODO def get_circular_distance()
 
