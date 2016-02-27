@@ -6,7 +6,7 @@ Note that distances are in meters and angles are in radians.
 
 from math import sin, cos, tan, sqrt, pi
 from constants import EARTH_RADIUS, EARTH_ECCEN, ACCEL_GRAV, BANKING_ANGLE
-from obstacle_avoid import Distance
+from tuples import Distance
 
 def get_earth_radii(lat):
     """Returns meridional radius of curvature and the radius of curvature in the prime
@@ -24,7 +24,11 @@ def get_earth_radii(lat):
     return r_1, r_2
 
 def _get_magnitude(dist):
-    """Returns the magnitude given a vector."""
+    """Returns the magnitude given a vector.
+        
+    input: dist, Distance namedtuple
+    output: magnitude
+    """
 
     return sqrt(sum(dist))
 
@@ -37,6 +41,19 @@ def _get_turning_radius(airspeed):
     """
 
     return airspeed ** 2 / ACCEL_GRAV / tan(BANKING_ANGLE)
+
+def get_bearing(wp_1, wp_2):
+    """Returns the bearing from wp_1 to wp_2 using the flat earth approximation.
+        
+        North: 0 rad, East: pi / 2 rad, South: pi rad, West: 3 * pi / 2 rad
+        
+        input: wp_1 and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters
+        output: bearing in radians
+        """
+    
+    dist = get_linear_distance(wp_1, wp_2)
+    
+    return atan2(dist['x'], dist['y']) % (2 * pi)
 
 def get_linear_distance(wp_1, wp_2):
     """Returns the distance between the two sets of coordinates using the flat earth

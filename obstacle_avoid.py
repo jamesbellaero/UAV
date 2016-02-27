@@ -7,17 +7,8 @@ Note that latitudes and longitudes are expressed in radians and distances are in
 """
 
 from math import sin, cos, atan2, pi
-from distance import get_earth_radii, get_linear_distance
-from collections import namedtuple
-
-# Named tuples so that waypoints, obstacles, and distances can have their information
-# represented by string. If the obstacle is a sphere, height = -1.
-# Ex: wp = Waypoint(lat = 5, lon = 2, alt = 40)
-#     obs = Obstacle(wp, height = -1, radius = 20)
-#     dist = Distance(x = 10, y = 1, z = 20)
-Waypoint = namedtuple('Waypoint', 'lat, lon, alt')
-Obstacle = namedtuple('Obstacle', 'wp, height, radius')
-Distance = namedtuple('Distance', 'x, y, z')
+from calc_distance import get_earth_radii
+from tuples import Waypoint
 
 def _get_waypoint(starting_wp, bearing, distance):
     """Returns the coordinate at a distance 'distance' and at the bearing from an obstacle
@@ -62,16 +53,3 @@ def get_right_waypoint(lat, lon, yaw, radius):
     """
 
     return _get_waypoint(lat, lon, alt, yaw + pi / 2, radius)
-
-def get_bearing(wp_1, wp_2):
-    """Returns the bearing from wp_1 to wp_2 using the flat earth approximation.
-    
-    North: 0 rad, East: pi / 2 rad, South: pi rad, West: 3 * pi / 2 rad
-    
-    input: wp_1 and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters
-    output: bearing in radians
-    """
-    
-    dist = get_linear_distance(wp_1, wp_2)
-
-    return atan2(dist['x'], dist['y']) % (2 * pi)
