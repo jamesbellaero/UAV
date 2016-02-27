@@ -1,11 +1,17 @@
 from math import sqrt
-from calc_distance import get_linear_distance, get_bearing
+from calc_distance import get_linear_distance, get_bearing, get_magnitude_xy
 from constants import AVOID_DISTANCE_STAT, AVOID_DISTANCE_MOV
 
-def do_obs_intersect(obs_1, obs_2):
-    pass
-    #dist = get_linear_distance(obs_1.wp, obs_2.wp)
-    #TODO
+def do_obs_intersect(obs_1, obs_2, pass_alt):
+    """TODO description."""
+    
+    radius_1 = get_avoid_radius(obs_1, pass_alt)
+    radius_2 = get_avoid_radius(obs_2, pass_alt)
+
+    dist = get_linear_distance(obs_1.wp, obs_2.wp)
+    dist_xy = get_magnitude_xy(dist)
+
+    return radius_1 + radius_2 <= dist_xy
 
 def get_avoid_radius(obs, pass_alt):
     """Returns how far the plane must avoid obs if it passes obs at pass_alt. Zero is
@@ -36,7 +42,7 @@ def get_avoid_radius(obs, pass_alt):
     # Return zero if pass_alt is far above or below obs
     return 0
 
-def _can_travel_linear(wp_1, wp_2, obs):
+def _is_obs_in_way_linear(wp_1, wp_2, obs):
 
     bearing = get_bearing(wp_1, wp_2)
     
@@ -48,6 +54,6 @@ def _can_travel_linear(wp_1, wp_2, obs):
 
     #TODO finish
 
-# def _can_travel_circle(wp_1, radius, angle)
+# def _is_obs_in_way_circular(wp_1, radius, angle)
 
-# def can_travel(wp_1, wp_2, airspeed)
+# def can_travel(wp_1, wp_2, airspeed, obs_list)

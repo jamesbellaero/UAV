@@ -23,14 +23,23 @@ def get_earth_radii(lat):
     
     return r_1, r_2
 
-def _get_magnitude(dist):
-    """Returns the magnitude given a vector.
+def get_magnitude(dist):
+    """Returns the magnitude given a distance.
         
     input: dist, Distance namedtuple
     output: magnitude
     """
 
-    return sqrt(sum(dist))
+    return sqrt(dist.x ** 2 + dist.y ** 2 + dist.z ** 2)
+
+def get_magnitude_xy(dist):
+    """Returns the magnitude given a distance on only the xy plane.
+        
+    input: dist, Distance namedtuple
+    output: magnitude
+    """
+    
+    return sqrt(dist.x ** 2 + dist.y ** 2)
 
 def _get_turning_radius(airspeed):
     """Returns the turning radius for the plane traveling at true airspeed 'airspeed'
