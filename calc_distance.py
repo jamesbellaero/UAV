@@ -72,7 +72,7 @@ def get_linear_distance(wp_1, wp_2):
     
     return Distance(x = x_dist, y = y_dist, z = z_dist)
 
-def get_Distance_Plane(wp_plane, wp_2, bearing):
+def get_distance_plane(wp_plane, wp_2, bearing):
     """Returns the distance from the nose of the plane to a waypoint with a given bearing.
     The x coordinate is the distance to the left and right of the plane in the direction
     of the nose, the y coordinate is how far in front of the plane, and the z coordinate

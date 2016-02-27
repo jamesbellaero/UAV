@@ -36,3 +36,18 @@ def get_avoid_radius(obs, pass_alt):
     # Return zero if pass_alt is far above or below obs
     return 0
 
+def _can_travel_linear(wp_1, wp_2, obs):
+
+    bearing = get_bearing(wp_1, wp_2)
+    
+    wp_dist = get_distance_plane(wp_1, wp_2, bearing)
+    obs_dist = get_distance_plane(wp_1, obs.wp, bearing)
+
+    pass_alt = wp_1.alt + obs_dist.y / float(wp_dist.y) * wp_dist.z
+    avoid_radius = get_avoid_radius(obs, pass_alt)
+
+    #TODO finish
+
+# def _can_travel_circle(wp_1, radius, angle)
+
+# def can_travel(wp_1, wp_2, airspeed)
