@@ -41,7 +41,7 @@ def get_magnitude_xy(dist):
     
     return sqrt(dist.x ** 2 + dist.y ** 2)
 
-def _get_turning_radius(airspeed):
+def get_turning_radius(airspeed):
     """Returns the turning radius for the plane traveling at true airspeed 'airspeed'
     while banking.
     
@@ -53,12 +53,12 @@ def _get_turning_radius(airspeed):
 
 def get_bearing(wp_1, wp_2):
     """Returns the bearing from wp_1 to wp_2 using the flat earth approximation.
-        
-        North: 0 rad, East: pi / 2 rad, South: pi rad, West: 3 * pi / 2 rad
-        
-        input: wp_1 and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters
-        output: bearing in radians
-        """
+    
+    North: 0 rad, East: pi / 2 rad, South: pi rad, West: 3 * pi / 2 rad
+    
+    input: wp_1 and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters
+    output: bearing in radians
+    """
     
     dist = get_linear_distance(wp_1, wp_2)
     
@@ -84,8 +84,8 @@ def get_linear_distance(wp_1, wp_2):
 def get_distance_plane(wp_plane, wp_2, bearing):
     """Returns the distance from the nose of the plane to a waypoint with a given bearing.
     The x coordinate is the distance to the left and right of the plane in the direction
-    of the nose, the y coordinate is how far in front of the plane, and the z coordinate
-    is how far above or below the plane.
+    of the nose, the y coordinate is how far in front of or behind the plane, and the z
+    coordinate is how far above or below the plane.
     
     input: wp_plane and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters,
         bearing in radians
@@ -100,6 +100,6 @@ def get_distance_plane(wp_plane, wp_2, bearing):
 
     return Distance(x = i, y = j, z = k)
 
-#TODO def get_circular_distance()
+#TODO def get_helix_distance(wp_1, radius, angle)
 
 #TODO def get_distance()
