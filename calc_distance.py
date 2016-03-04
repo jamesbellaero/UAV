@@ -102,4 +102,78 @@ def get_distance_plane(wp_plane, wp_2, bearing):
 
 #TODO def get_helix_distance(wp_1, radius, angle)
 
+def get_turn(wp_plane, wp_2, bearing, airspeed):
+    """Returns both the angle that the plane must turn and the distance relative to the
+    plane of the point where the plane no longer turns. It is assumed that the plane turns
+    in a circular path and then flies directly to wp_2.
+    
+    input: wp_plane and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters,
+        bearing in radians, airspeed is meters per second
+    output: tuple with angle in radians first and Distance namedtuple, x, y, and z in
+        meters second
+    """
+    
+    # Get the distance of wp_2 relative to the plane
+    dist = get_distance_plane(wp_plane, wp_2, bearing)
+
+    i = dist.x
+    j = dist.y
+    k = dist.z
+
+    # Get the turning radius of the plane
+    R = get_turning_radius(airspeed)
+    
+    # If the waypoint is too the left make the plane turn left
+    if (i < 0):
+        R = -R
+        
+        # If the plane cannot make a tight enough turn, turn the other way
+        if ((i - R) ** 2 + j ** 2 < R ** 2):
+            R = -R
+    
+    # Find a, b, and c, the distances relative to the plane of the point where the plane
+    # no longer turns
+    
+    # Try to find a
+    try:
+        a = (R * i ** 2 - R ** 2 * i + R * j ** 2 - R * j * sqrt(i ** 2 - 2 * R * i + j
+                ** 2)) / double(R ** 2 - 2 * R * i + i ** 2 + j ** 2)
+    
+    # Find a and b due to floating point errors for when the plane doesn't turn at all or
+    # when the plane turns pi radians left or right
+    except (ZeroDivisionError, ValueError):
+        if (abs(i) < abs(R)):
+            a = 0
+        else:
+            a = 2 * R
+
+        b = 0
+
+    # Otherwise, find b
+    else:
+        b = sqrt(R ** 2 - (a - R) ** 2)
+        
+        if ((j < 0 and abs(i) < 2 * abs(R)) or i / double(R) < 0):
+            B = -B
+
+    # Find how what angle the plane must turn, will be positive for both turning left and
+    # right
+    angle = (atan2(B, abs(R) / R * (R - A))) % (2 * pi)
+
+    # Find the distances in the xy plane of the circular and linear path
+    circ_dist_xy = abs(R) * angle
+    lin_dist_xy = sqrt((i - a) ** 2 + (j - b) ** 2)
+
+    # Try to find c as a ratio of the circular distance to the total distance times k
+    try:
+        c = circ_dist_xy / double(circ_dist_xy + lin_dist_xy) * k
+
+    # c is zero due to floating point errors if both wp_plane and wp_2 are extremely close
+    except ZeroDivisionError:
+        c = 0
+
+    # Return both and angle the plane must turn and the distance relative to the plane of
+    # the point where the plane no longer turns in a tuple
+    return (angle, Distance(x = a, y, = b, z = c))
+
 #TODO def get_distance()
