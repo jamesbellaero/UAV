@@ -1,6 +1,6 @@
 from math import sqrt
 from calc_distance import (get_linear_distance, get_bearing, get_magnitude_xy,
-        get_turning_radius)
+        get_turn)
 from constants import AVOID_DISTANCE_STAT, AVOID_DISTANCE_MOV
 
 def do_obs_overlap(obs_1, obs_2, pass_alt):
@@ -65,4 +65,13 @@ def _is_obs_in_way_linear(wp_1, wp_2, obs):
 
 # def _is_obs_in_way_helix(wp_1, radius, angle):
 
-# def can_travel(wp_1, wp_2, airspeed, obs_list):
+def can_travel(wp_plane, wp_2, bearing, airspeed, obs_list):
+    turn = get_turn(wp_plane, wp_2, bearing, airspeed)
+    
+    angle = turn[0]
+    dist = turn[1]
+    
+    for obs in obs_list:
+        pass # TODO
+    
+    return true

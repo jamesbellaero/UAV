@@ -10,6 +10,7 @@ from math import sin, cos, atan2, pi
 from calc_distance import get_earth_radii
 from tuples import Waypoint
 
+# Deprecated?
 def _get_waypoint(starting_wp, bearing, distance):
     """Returns the coordinate at a distance 'distance' and at the bearing from an obstacle
     at starting_wp with the plane going through the waypoint at altitude 'alt'.

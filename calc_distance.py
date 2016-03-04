@@ -1,12 +1,15 @@
 """Handles computing the distance between two waypoints, with some functions taking in
 consideration turning to go to the next waypoint.
 
+Uses the flat earth approximation to convert latitudes and longitudes into distances, see
+http://williams.best.vwh.net/avform.htm#flat for details.
+
 Note that distances are in meters and angles are in radians.
 """
 
-from math import sin, cos, tan, sqrt, pi
+from math import sin, cos, tan, atan2, sqrt, pi
 from constants import EARTH_RADIUS, EARTH_ECCEN, ACCEL_GRAV, BANKING_ANGLE
-from tuples import Distance
+from tuples import Distance, Waypoint
 
 def get_earth_radii(lat):
     """Returns meridional radius of curvature and the radius of curvature in the prime
@@ -67,7 +70,7 @@ def get_bearing(wp_1, wp_2):
 def get_linear_distance(wp_1, wp_2):
     """Returns the distance between the two sets of coordinates using the flat earth
     approximation. wp_1 is used as the reference point to approximate the distance. The
-    output is the Distance namedtuple.
+    output is a Distance namedtuple.
     
     input: wp_1 and wp_2, Waypoint namedtuple, lat and lon in radians, alt in meters
     output: Distance namedtuple, x, y, and z in meters
@@ -123,12 +126,12 @@ def get_turn(wp_plane, wp_2, bearing, airspeed):
     # Get the turning radius of the plane
     R = get_turning_radius(airspeed)
     
-    # If the waypoint is too the left make the plane turn left
+    # If the waypoint is to the left make the plane turn left
     if (i < 0):
         R = -R
         
-        # If the plane cannot make a tight enough turn, turn the other way
-        if ((i - R) ** 2 + j ** 2 < R ** 2):
+    # If the plane cannot make a tight enough turn, turn the other way
+    if ((i - R) ** 2 + j ** 2 < R ** 2):
             R = -R
     
     # Find a, b, and c, the distances relative to the plane of the point where the plane
@@ -174,6 +177,24 @@ def get_turn(wp_plane, wp_2, bearing, airspeed):
 
     # Return both and angle the plane must turn and the distance relative to the plane of
     # the point where the plane no longer turns in a tuple
-    return (angle, Distance(x = a, y, = b, z = c))
+    return (angle, Distance(x = a, y = b, z = c))
 
 #TODO def get_distance()
+
+def get_waypoint(wp_1, dist):
+    """Returns the waypoint at dist from wp_1 using the using the flat earth
+    approximation. wp_1 is used as the reference point to approximate the waypoint. The
+    output is a Waypoint namedtuple.
+    
+    input: wp_1, Waypoint namedtuple, lat and lon in radians, alt in meters, dist,
+        Distance namedtuple, x, y, and z in meters
+    output: Waypoint namedtuple, lat and lon in radians, alt in meters
+    """
+    
+    e_radii = get_earth_radii(wp_1.lat)
+
+    wp_lat = dist.y / e_radii[0] + wp_1.lat
+    wp_lon = dist.x / e_radii[1] / cos(wp_1.lat) + wp_1.lon
+    wp_alt = wp_1.alt + dist.alt
+    
+    return Waypoint(lat = wp_lat, lon = wp_lon, alt = wp_alt)
