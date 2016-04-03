@@ -52,18 +52,45 @@ def get_avoid_radius(obs, pass_alt):
     return 0
 
 def _is_obs_in_way_linear(wp_1, wp_2, obs):
-
+    """TODO
+    """
+    
+    ###############################
+    #                             #
+    # FIX RADIUS AT WP_1 and WP_2 #
+    #                             #
+    ###############################
+    
+    # Find the distances of wp_2 and obs_1 relative to wp_1 with the plane at that bearing
     bearing = get_bearing(wp_1, wp_2)
     
     wp_dist = get_distance_plane(wp_1, wp_2, bearing)
     obs_dist = get_distance_plane(wp_1, obs.wp, bearing)
 
+    # Find the radius obs must be avoided at
     pass_alt = wp_1.alt + obs_dist.y / float(wp_dist.y) * wp_dist.z
     avoid_radius = get_avoid_radius(obs, pass_alt)
+    
+    # If wp_1 is within obs return True
+    if (sqrt(obs_dist.x ** 2 + obs_dist.y ** 2) < avoid_radius):
+        return False
 
-    #TODO finish
+    # If obs is behind wp_1 return False
+    if (obs_dist.y < 0):
+        return False
 
-# def _is_obs_in_way_helix(wp_1, radius, angle):
+    # If obs is not farther ahead than wp_2
+    if (obs_dist.y > wp_dist.y):
+        
+        # If obs is not far enough to the left or right return True
+        return obs_dist.x < avoid_radius
+
+    # Otherwise return True if wp_2 is within obs
+    obs_dist_2 = get_distance_plane(wp_2, obs.wp, bearing)
+
+    return sqrt(obs_dist_2.x ** 2 + obs_dist_2.y ** 2) < avoid_radius
+
+def _is_obs_in_way_helix(wp_1, radius, angle):
 
 def can_travel(wp_plane, wp_2, bearing, airspeed, obs_list):
     turn = get_turn(wp_plane, wp_2, bearing, airspeed)
