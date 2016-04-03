@@ -28,10 +28,8 @@ class Distance(object):
 
 class Location(object):
     
-    """
     EARTH_RADIUS = 6378137
     EARTH_ECCEN = 0.0818191908
-    """
     
     def __init__(self, lon, lat, alt):
         
@@ -39,7 +37,6 @@ class Location(object):
         self.lat = lat
         self.alt = alt
 
-    """
     def _get_earth_radii(self):
     
         r_1 = (EARTH_RADIUS * (1 - EARTH_RADIUS ** 2) /
@@ -69,11 +66,8 @@ class Location(object):
         alt = self.alt + dist.alt
     
         return Location(lat, lon, alt)
-    """
     
     def get_distance(self, loc_2, angle=0):
-    
-    
     
     @classmethod
     def convert_location(cls, global_relative_frame):
