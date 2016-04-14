@@ -6,10 +6,10 @@ from client import IncomingClient, OutgoingClient
 
 from math import tan
 
+BANKING_ANGLE = 0.53260
+ACCEL_GRAV = 9.80665
+
 class Plane(object):
-    
-    BANKING_ANGLE = 0.53260
-    ACCEL_GRAV = 9.80665
     
     def __init__(self, connection_string='/dev/ttyAMA0', baud_rate=57600):
         

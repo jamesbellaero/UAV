@@ -1,10 +1,11 @@
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 from threading import Thread
+from time import time, sleep
 
 IP_POLO = 'TODO: get ip of polo'
 
 IN_PORT = 25000
-OUT_PORT = 25001
+OUT_PORT = 25001 
 
 class BaseClient(object):
 
@@ -13,15 +14,20 @@ class BaseClient(object):
         self.socket = socket(AF_INET, SOCK_STREAM if tcp else SOCK_DGRAM)
         self.socket.connect((ip, port))
 
+        self.closed = False
+
     def receive(self, length):
 
-        self.socket.recv(length)
+        return self.socket.recv(length)
 
-    def send(self, message):
+    def send(self, message, length):
 
-        self.socket.send(message)
+        if (len(message) == length):
+            self.socket.send(message)
 
     def close(self):
+
+        self.closed = True
 
         self.socket.close()
 
@@ -33,48 +39,75 @@ class IncomingClient(BaseClient):
         
         self.plane = plane
 
-        in_thread = Thread(target = receive_messages)
+        in_thread = Thread(target = process_messages)
         in_thread.start()
 
-    def receive_initial_messages():
+    def process_initial_messages(self):
     
         # TODO
 
-    def receive_messages():
+    def process_messages(self):
 
-        in_initial = Thread(target = recieve_initial_messages)
+        in_initial = Thread(target = process_initial_messages)
         in_initial.start()
         in_initial.join()
 
-        # TODO
+        while (not self.closed):
+
+            # TODO
 
 class OutgoingClient(BaseClient):
     
     def __init__(self, plane):
         
         super(OutgoingClient, self).__init__(IP_POLO, OUT_PORT)
-        
+
         self.plane = plane
-        
+        self.can_send = False
+
         out_thread = Thread(target = send_messages)
         out_thread.start()
     
-    def send_initial_messages():
+    def send_initial_message(self):
     
-        # TODO
+        home_loc = self.plane.home_loc
+
+        string = '%12.9f%12.9f%8.2f' % (home_loc.lat, home_loc.lon, home_loc.alt)
+        send(string, 32)
     
-    def send_messages():
+    def send_messages(self):
         
-        out_initial_thread = Thread(target = send_initial_messages)
+        out_initial_thread = Thread(target = send_initial_message)
         out_initial_thread.start()
         out_initial.join()
 
-        # TODO
+        @self.plane.vehicle.on_attribute('commands')
+        def send_waypoints(self, name, value):
 
-    def start_sending():
+            # TODO
+
+        while (not self.closed):
+    
+            if (self.can_send):
+
+
+                # TODO
+
+            sleep(0.1)
+
+    def start_sending(self):
+
+        if (not 'start_time' in locals()):
+            self.start_time = time()
 
         self.can_send = True
 
-    def stop_sending():
+    def stop_sending(self):
 
         self.can_send = False
+
+    @property
+    def time(self):
+
+        return time() - self.start_time
+    
