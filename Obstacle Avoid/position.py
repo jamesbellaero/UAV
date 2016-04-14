@@ -1,6 +1,8 @@
-from math import sin, cos
+from math import sin, cos, atan2, pi
 
-from unit_conversions import deg_to_rad
+from dronekit import LocationGlobalRelative
+
+from unit_conversions import deg_to_rad, rad_to_deg
 
 class Distance(object):
 
@@ -45,13 +47,13 @@ class Location(object):
            
         return (r_1, r_2)
 
-    def get_distance(self, loc_2, angle=0):
+    def get_distance(self, loc, angle=0):
     
         e_radii = _get_earth_radii()
         
-        x = e_radii[1] * cos(self.lat) * (loc_2.lon - self.lon)
-        y = e_radii[0] * (loc_2.lat - self.lat)
-        z = loc_2.alt - self.alt
+        x = e_radii[1] * cos(self.lat) * (loc.lon - self.lon)
+        y = e_radii[0] * (loc.lat - self.lat)
+        z = loc.alt - self.alt
         
         dist = Distance(x, y, z)
         
@@ -67,13 +69,25 @@ class Location(object):
     
         return Location(lat, lon, alt)
     
-    def get_distance(self, loc_2, angle=0):
+    def get_bearing(self, loc):
     
-    @classmethod
-    def convert_location(cls, global_relative_frame):
+        dist = get_distance(loc)
+    
+        return atan2(dist.x, dist.y) % (2 * pi)
+    
+    @staticmethod
+    def from_dronekit_location(dk_loc):
         
-        lon = deg_to_rad(global_relative_frame.lon)
-        lat = deg_to_rad(global_relative_frame.lat)
-        alt = global_relative_frame.alt
+        lon = deg_to_rad(dk_loc.lon)
+        lat = deg_to_rad(dk_loc.lat)
+        alt = dk_loc.alt
 
-        return cls(lon, lat, alt)
+        return Location(lon, lat, alt)
+
+    def to_dronekit_location(self):
+
+        lon = rad_to_deg(self.lon)
+        lat = rad_to_deg(self.lat)
+        alt = self.alt
+
+        return LocationGlobalRelative(lon, lat, alt)

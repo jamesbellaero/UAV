@@ -1,5 +1,5 @@
 from abc import ABCmeta, abstractmethod, abstractproperty
-from math import sqrt
+from math import sqrt, pi
 
 class BaseObstacle(object):
     
@@ -51,15 +51,33 @@ class BaseObstacle(object):
         
         return radius > dist_xy
 
+    def is_plane_approaching(self, plane):
+        
+        if (is_loc_inside(plane.loc)):
+            
+            return False
+
+        if (not is_loc_in_avoid_radius(plane.loc)):
+        
+            # TODO: If plane is outside avoid radius but will go into avoid radius
+
+        return abs((plane.heading - plane.loc.get_bearing(self.loc)) % (2 * pi)) < pi / 2
+
     def is_in_way(self, plane, loc, start_loc=None, heading=None):
 
         if (start_loc == None):
+            
             start_loc = plane.loc
 
         if (heading == None):
+            
             heading = plane.heading
 
-        #TODO
+        if (self.is_loc_inside(start_loc)):
+            
+            return False
+
+        # TODO
 
 class StaticObstacle(BaseObstacle):
 

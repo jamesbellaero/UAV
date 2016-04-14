@@ -1,6 +1,7 @@
 from dronekit import connect
 
-from types.Location import convert_location
+from position.Location import from_dronekit_location
+from unit_conversions import deg_to_rad
 
 from math import tan
 
@@ -11,13 +12,11 @@ class Plane(object):
     
     def __init__(self, connection_string='/dev/ttyAMA0', baud_rate=57600):
         
-        # TODO: Thread to ask Marco when to connect.
-        
         self.vehicle = connect(connection_string, baud = baud_rate, wait_ready=True)
 
-        # TODO: Notify Marco that dronekit as been connected.
-
         # TODO: Start obstacle avoidance thread.
+        
+        # TODO: Start clients to ports tcp 25000 and 25001
 
     @property
     def airspeed(self):
@@ -27,14 +26,24 @@ class Plane(object):
     @property
     def heading(self):
         
-        return self.vehicle.heading
+        return deg_to_rad(self.vehicle.heading)
 
     @property
     def loc(self):
         
-        return convert_location(self.vehicle.global_relative_frame)
+        return from_dronekit_location(self.vehicle.global_relative_frame)
     
     @property
     def turning_radius(self):
         
         return self.airspeed ** 2 / ACCEL_GRAV / tan(BANKING_ANGLE)
+    
+    @property
+    def home_loc(self):
+
+        commands = self.vehicle.commands
+        
+        commands.download()
+        commands.wait_ready()
+
+        return from_dronekit_location(vehicle.home_location)
