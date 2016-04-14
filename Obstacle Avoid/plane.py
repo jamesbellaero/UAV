@@ -2,6 +2,7 @@ from dronekit import connect
 
 from position.Location import from_dronekit_location
 from unit_conversions import deg_to_rad
+from client import IncomingClient, OutgoingClient
 
 from math import tan
 
@@ -14,9 +15,10 @@ class Plane(object):
         
         self.vehicle = connect(connection_string, baud = baud_rate, wait_ready=True)
 
+        self.in_client = IncomingClient(self)
+        self.out_client = OutgoingClient(self)
+    
         # TODO: Start obstacle avoidance thread.
-        
-        # TODO: Start clients to ports tcp 25000 and 25001
 
     @property
     def airspeed(self):

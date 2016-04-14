@@ -1,4 +1,4 @@
-from socket import socket, SOCK_DGRAM, SOCK_STREAM
+from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 from threading import Thread
 
 IP_POLO = 'TODO: get ip of polo'
@@ -10,9 +10,7 @@ class BaseClient(object):
 
     def __init__(self, ip, port, tcp = True):
 
-        self.socket = socket(socket.AF_INET,
-                socket.SOCK_STREAM if tcp else socket.SOCK_DGRAM)
-                
+        self.socket = socket(AF_INET, SOCK_STREAM if tcp else SOCK_DGRAM)
         self.socket.connect((ip, port))
 
     def receive(self, length):
@@ -58,8 +56,8 @@ class OutgoingClient(BaseClient):
         
         self.plane = plane
         
-        in_thread = Thread(target = send_messages)
-        in_thread.start()
+        out_thread = Thread(target = send_messages)
+        out_thread.start()
     
     def send_initial_messages():
     
@@ -67,8 +65,16 @@ class OutgoingClient(BaseClient):
     
     def send_messages():
         
-        in_initial = Thread(target = send_initial_messages)
-        in_initial.start()
-        in_initial.join()
+        out_initial_thread = Thread(target = send_initial_messages)
+        out_initial_thread.start()
+        out_initial.join()
 
         # TODO
+
+    def start_sending():
+
+        self.can_send = True
+
+    def stop_sending():
+
+        self.can_send = False
