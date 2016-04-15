@@ -1,5 +1,6 @@
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 from threading import Thread
+from Queue import Queue
 from time import time, sleep
 
 IP_POLO = 'TODO: get ip of polo'
@@ -23,17 +24,18 @@ class BaseClient(object):
         message = self.socket.recv(length)
 
         if (message):
+
             message_count += 1
 
-        if (message_count % 10 == 0):
-            send('ping', 4)
+            if (message_count % 10 == 0):
+
+                send('ping')
 
         return message
 
-    def send(self, message, length):
+    def send(self, message):
 
-        if (len(message) == length):
-            self.socket.send(message)
+        self.socket.send(message)
 
     def close(self):
 
@@ -73,16 +75,22 @@ class OutgoingClient(BaseClient):
         super(OutgoingClient, self).__init__(IP_POLO, OUT_PORT)
 
         self.plane = plane
+        self.queue = Queue
+
+        self.has_started = False
         self.can_send = False
 
-        out_thread = Thread(target = _send_messages)
-        out_thread.start()
+        sending_thread = Thread(target = sending_thread)
+        sending_thread.start()
+
+        message_thread = Thread(target = _send_messages)
+        message_thread.start()
     
     def _send_initial_message(self):
     
         home_loc = self.plane.home_loc
 
-        string = '%12.9f%12.9f%8.2f' % (home_loc.lat, home_loc.lon, home_loc.alt)
+        string = '%12.8f%12.8f%8.3f' % (home_loc.lat, home_loc.lon, home_loc.alt)
         send(string, 32)
     
     def _send_messages(self):
@@ -91,54 +99,59 @@ class OutgoingClient(BaseClient):
         out_initial_thread.start()
         out_initial.join()
 
-        sending_waypoints = False
-        sending_position = False
-
         @self.plane.vehicle.on_attribute('commands')
-        def send_waypoints(self, name, value):
+        def send_waypoints(self_, name, value):
 
-            # TODO get the waypoints here
+            if (not self.closed):
 
-            count_string = 'w' + 'TODO'
-            waypoint_string = 'TODO'
+                # TODO get the waypoints here
 
-            while (sending_position):
+                count_string = 'w' + 'TODO'
+                waypoint_string = 'TODO'
 
-                sleep(0.001)
+                queue.add((count_string, 8, waypoint_string, 'TODO: find length'))
 
-            sending_waypoints = True
-
-            send(count_string, 8)
-            send(waypoint_string, 'TODO: find length')
-
-            sending_waypoints = False
-
-        while (not self.closed):
-    
-            if (self.can_send):
-
-                # Gather position data
-
-                time_string = 't' + 'TODO'
-                position_string = 'TODO'
-
-                sending_list.extend((time_string, position_string))
-
-                while (not sending_waypoints and not sending_list):
-
-                    sending_position = True
-
-                    sending_message = sending_list.pop(0)
-                    send(sending_message, 8 if sending_message[0] == 't' else 'TODO: len')
-
-                sending_position = False
+        while (not has_started):
 
             sleep(0.1)
 
+        while (not self.closed):
+
+            next_wp = self.plane.next_wp
+            loc = self.plane.loc
+            heading = self.plane.heading
+            pitch = self.plane.pitch
+            roll = self.plane.roll
+
+            time_string = 't%7.2f' % self.time
+            telemetry_string = '%3.0f%12.8f%12.8f%8.3f%6.3f%7.3f' % (next_wp, loc.lat,
+                    loc.lon, loc.alt, heading, pitch, roll)
+
+            queue.add((time_string, 8, telemetry_string, 48))
+
+            sleep(0.1)
+
+    def _sending_thread(self):
+
+        while (not self.closed):
+
+            if (self.can_send):
+
+                messages = queue.get()
+
+                if (len(messages[0]) == messages[1] and len(messages[2]) == messages[3]):
+
+                    send(messages[0])
+                    send(messages[2])
+
+                queue.task_done()
+
     def start_sending(self):
 
-        if (not 'start_time' in locals()):
+        if (not has_started):
+
             self.start_time = time()
+            has_started = True
 
         self.can_send = True
 

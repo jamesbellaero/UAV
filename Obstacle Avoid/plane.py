@@ -31,6 +31,16 @@ class Plane(object):
         return deg_to_rad(self.vehicle.heading)
 
     @property
+    def pitch(self):
+
+        return self.vehicle.pitch
+    
+    @property
+    def roll(self):
+        
+        return self.vehicle.roll
+
+    @property
     def loc(self):
         
         return from_dronekit_location(self.vehicle.global_relative_frame)
@@ -41,11 +51,23 @@ class Plane(object):
         return self.airspeed ** 2 / ACCEL_GRAV / tan(BANKING_ANGLE)
     
     @property
-    def home_loc(self):
-
+    def commands(self):
+        
         commands = self.vehicle.commands
         
         commands.download()
         commands.wait_ready()
 
-        return from_dronekit_location(vehicle.home_location)
+        return commands
+
+    @property
+    def home_loc(self):
+
+        commands = self.commands
+
+        return from_dronekit_location(self.vehicle.home_location)
+
+    @property
+    def next_wp(self):
+
+        return self.vehicle.next
