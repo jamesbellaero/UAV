@@ -53,8 +53,8 @@ class IncomingClient(BaseClient):
         
         self.plane = plane
 
-        in_thread = Thread(target = _process_messages)
-        in_thread.start()
+        process_thread = Thread(target = _process_messages)
+        process_thread.start()
 
     def _process_initial_messages(self):
     
@@ -77,12 +77,12 @@ class OutgoingClient(BaseClient):
         super(OutgoingClient, self).__init__(IP_POLO, OUT_PORT)
 
         self.plane = plane
-        self.queue = Queue
+        self.queue = Queue()
 
         self.has_started = False
         self.can_send = False
 
-        sending_thread = Thread(target = sending_thread)
+        sending_thread = Thread(target = _sending_thread)
         sending_thread.start()
 
         message_thread = Thread(target = _send_messages)
@@ -106,12 +106,10 @@ class OutgoingClient(BaseClient):
 
             if (not self.closed):
 
-                # TODO get the waypoints here
+                waypoint_string = value
+                length_string = 'w%8.0f' % len(waypoint_string)
 
-                count_string = 'w' + 'TODO'
-                waypoint_string = 'TODO'
-
-                queue.add((count_string, 8, waypoint_string, 'TODO: find length'))
+                queue.add(((length_string, 8), (waypoint_string, 'TODO: find length')))
 
         while (not has_started):
 
@@ -129,7 +127,7 @@ class OutgoingClient(BaseClient):
             telemetry_string = '%3.0f%12.8f%12.8f%8.3f%6.3f%7.3f' % (next_wp, loc.lat,
                     loc.lon, loc.alt, heading, pitch, airspeed)
 
-            queue.add((time_string, 8, telemetry_string, 48))
+            queue.add(((time_string, 8), (telemetry_string, 48)))
 
             sleep(0.1)
 
@@ -141,10 +139,19 @@ class OutgoingClient(BaseClient):
 
                 messages = queue.get()
 
-                if (len(messages[0]) == messages[1] and len(messages[2]) == messages[3]):
+                lengths_match = True
 
-                    send(messages[0])
-                    send(messages[2])
+                for (message in messages):
+
+                    if (not len(message[0]) == message[1]):
+
+                        lengths_match = False
+
+                if (lengths_match):
+
+                    for (message in messages):
+
+                        send(message[0])
 
                 queue.task_done()
 
