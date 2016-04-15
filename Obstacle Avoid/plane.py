@@ -3,6 +3,7 @@ from dronekit import connect
 from position.Location import from_dronekit_location
 from unit_conversions import deg_to_rad
 from client import IncomingClient, OutgoingClient
+from avoidance import AvoidanceSystem
 
 from math import tan
 
@@ -18,7 +19,7 @@ class Plane(object):
         self.in_client = IncomingClient(self)
         self.out_client = OutgoingClient(self)
     
-        # TODO: Start obstacle avoidance thread.
+        self.avoid_sys = AvoidanceSystem(self)
 
     @property
     def airspeed(self):
@@ -33,12 +34,7 @@ class Plane(object):
     @property
     def pitch(self):
 
-        return self.vehicle.pitch
-    
-    @property
-    def roll(self):
-        
-        return self.vehicle.roll
+        return self.vehicle.attitude.pitch
 
     @property
     def loc(self):

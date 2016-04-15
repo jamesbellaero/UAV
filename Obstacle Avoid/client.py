@@ -41,6 +41,8 @@ class BaseClient(object):
 
         self.closed = True
 
+        sleep(1)
+
         self.socket.close()
 
 class IncomingClient(BaseClient):
@@ -121,12 +123,11 @@ class OutgoingClient(BaseClient):
             loc = self.plane.loc
             heading = self.plane.heading
             pitch = self.plane.pitch
-            roll = self.plane.roll
-            #put airspeed
+            roll = self.plane.airpseed
 
             time_string = 't%7.2f' % self.time
             telemetry_string = '%3.0f%12.8f%12.8f%8.3f%6.3f%7.3f' % (next_wp, loc.lat,
-                    loc.lon, loc.alt, heading, pitch, roll)
+                    loc.lon, loc.alt, heading, pitch, airspeed)
 
             queue.add((time_string, 8, telemetry_string, 48))
 
