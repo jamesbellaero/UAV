@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Handles converting units of latitude and longitude and distance.
+"""Handles converting units of latitude and longitude, distance, and speed.
     
 Latitude and longitude can be switched between decimal degrees, radians, and degrees,
-minutes, and seconds (e.g. 23° 32' 34.4432" N) and distance can be switched between feet
-and meters.
+minutes, and seconds (e.g. 23° 32' 34.4432" N), distance can be switched between feet
+and meters, and speed can be switched between knots and meters per second.
 """
 
 from math import floor, pi
@@ -62,3 +62,13 @@ def meters(feet):
     """Converts a distance in feet to meters."""
 
     return feet * 0.3048
+
+def knots(meters_per_second):
+    """Converts a speed in meters per second to knots."""
+
+    return meters_per_second * 1.94384
+
+def meters_per_second(knots):
+    """Converts a speed in knots to meters per second."""
+
+    return knots * 0.514444
