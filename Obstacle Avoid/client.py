@@ -16,9 +16,19 @@ class BaseClient(object):
 
         self.closed = False
 
+        message_count = 0
+
     def receive(self, length):
 
-        return self.socket.recv(length)
+        message = self.socket.recv(length)
+
+        if (message):
+            message_count += 1
+
+        if (message_count % 10 == 0):
+            send('ping', 4)
+
+        return message
 
     def send(self, message, length):
 
@@ -39,16 +49,16 @@ class IncomingClient(BaseClient):
         
         self.plane = plane
 
-        in_thread = Thread(target = process_messages)
+        in_thread = Thread(target = _process_messages)
         in_thread.start()
 
-    def process_initial_messages(self):
+    def _process_initial_messages(self):
     
         # TODO
 
-    def process_messages(self):
+    def _process_messages(self):
 
-        in_initial = Thread(target = process_initial_messages)
+        in_initial = Thread(target = _process_initial_messages)
         in_initial.start()
         in_initial.join()
 
@@ -65,33 +75,63 @@ class OutgoingClient(BaseClient):
         self.plane = plane
         self.can_send = False
 
-        out_thread = Thread(target = send_messages)
+        out_thread = Thread(target = _send_messages)
         out_thread.start()
     
-    def send_initial_message(self):
+    def _send_initial_message(self):
     
         home_loc = self.plane.home_loc
 
         string = '%12.9f%12.9f%8.2f' % (home_loc.lat, home_loc.lon, home_loc.alt)
         send(string, 32)
     
-    def send_messages(self):
+    def _send_messages(self):
         
-        out_initial_thread = Thread(target = send_initial_message)
+        out_initial_thread = Thread(target = _send_initial_message)
         out_initial_thread.start()
         out_initial.join()
+
+        sending_waypoints = False
+        sending_position = False
 
         @self.plane.vehicle.on_attribute('commands')
         def send_waypoints(self, name, value):
 
-            # TODO
+            # TODO get the waypoints here
+
+            count_string = 'w' + 'TODO'
+            waypoint_string = 'TODO'
+
+            while (sending_position):
+
+                sleep(0.001)
+
+            sending_waypoints = True
+
+            send(count_string, 8)
+            send(waypoint_string, 'TODO: find length')
+
+            sending_waypoints = False
 
         while (not self.closed):
     
             if (self.can_send):
 
+                # Gather position data
 
-                # TODO
+                time_string = 't' + 'TODO'
+                position_string = 'TODO'
+
+                sending_list.extend((time_string, position_string))
+
+                while (not sending_waypoints and not sending_list):
+
+                    sending_position = True
+
+                    sending_message = sending_list.pop(0)
+                    send(sending_message, 8 if sending_message[0] == 't' else 'TODO: len')
+
+                sending_position = False
 
             sleep(0.1)
 
