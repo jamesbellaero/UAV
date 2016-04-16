@@ -1,6 +1,6 @@
 from dronekit import connect
 
-from position.Location import from_dronekit_location
+from position import Location
 from unit_conversions import deg_to_rad
 from client import IncomingClient, OutgoingClient
 from avoidance import AvoidanceSystem
@@ -39,7 +39,7 @@ class Plane(object):
     @property
     def loc(self):
         
-        return from_dronekit_location(self.vehicle.global_relative_frame)
+        return Location.from_dronekit_location(self.vehicle.global_relative_frame)
     
     @property
     def turning_radius(self):

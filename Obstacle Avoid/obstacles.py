@@ -1,9 +1,9 @@
-from abc import ABCmeta, abstractmethod, abstractproperty
+from abc import ABCMeta, abstractmethod, abstractproperty
 from math import sqrt, pi
 
 class BaseObstacle(object):
     
-    __metaclass__ = ABCmeta
+    __metaclass__ = ABCMeta
 
     @abstractproperty
     def loc(self):
@@ -22,10 +22,10 @@ class BaseObstacle(object):
 
     def does_overlap(self, obs, alt):
         
-        radius_1 = get_avoid_radius(alt):
-        radius_2 = obs.get_avoid_radius(alt):
+        radius_1 = get_avoid_radius(alt)
+        radius_2 = obs.get_avoid_radius(alt)
 
-        if (radius_1 == 0 or radius_2 == 0):
+        if radius_1 == 0 or radius_2 == 0:
             return False
 
         dist = self.loc.get_distance(obs.loc)
@@ -53,27 +53,28 @@ class BaseObstacle(object):
 
     def is_plane_approaching(self, plane):
         
-        if (is_loc_inside(plane.loc)):
+        if is_loc_inside(plane.loc):
             
             return False
 
-        if (not is_loc_in_avoid_radius(plane.loc)):
+        if not is_loc_in_avoid_radius(plane.loc):
         
+            pass
             # TODO: If plane is outside avoid radius but will go into avoid radius
 
         return abs((plane.heading - plane.loc.get_bearing(self.loc)) % (2 * pi)) < pi / 2
 
     def is_in_way(self, plane, loc, start_loc=None, heading=None):
 
-        if (start_loc == None):
+        if start_loc == None:
             
             start_loc = plane.loc
 
-        if (heading == None):
+        if heading == None:
             
             heading = plane.heading
 
-        if (self.is_loc_inside(start_loc)):
+        if self.is_loc_inside(start_loc):
             
             return False
 
@@ -96,17 +97,17 @@ class StaticObstacle(BaseObstacle):
 
     def get_cross_sectional_radius(self, alt):
         
-        if (abs(alt - self.loc.alt) < self.height / 2.0):
+        if abs(alt - self.loc.alt) < self.height / 2.0:
             return self.radius
     
         return 0
 
     def get_avoid_radius(self, alt):
 
-        if (abs(alt - self.loc.alt) <= self.height / 2.0):
+        if abs(alt - self.loc.alt) <= self.height / 2.0:
             return self.radius + AVOID_DIST_STAT
         
-        if (abs(alt - self.loc.alt) < self.height / 2.0 + AVOID_DIST_STAT):
+        if abs(alt - self.loc.alt) < self.height / 2.0 + AVOID_DIST_STAT:
             return self.radius + sqrt(AVOID_DIST_STAT ** 2 - (abs(alt - self.loc.alt)
                     - self.height / 2.0) ** 2)
 
@@ -127,7 +128,7 @@ class MovingObstacle(BaseObstacle):
     @property
     def loc(self):
     
-        if (not loc_queue.empty()):
+        if not loc_queue.empty():
             
             self._loc = loc.queue.get_nowait()
             loc.queue.task_done()
@@ -136,14 +137,14 @@ class MovingObstacle(BaseObstacle):
 
     def get_cross_sectional_radius(self, alt):
     
-        if (abs(alt - self.loc.alt) < self.radius):
+        if abs(alt - self.loc.alt) < self.radius:
             return sqrt(self.radius ** 2 - (alt - self.loc.alt) ** 2)
         
         return 0
 
     def get_avoid_radius(self, alt):
         
-        if (abs(alt - self.loc.alt) < AVOID_DIST_MOV + self.radius):
+        if abs(alt - self.loc.alt) < AVOID_DIST_MOV + self.radius:
             return sqrt((AVOID_DIST_MOV + self.radius) ** 2 - (alt - self.loc.alt) ** 2)
     
         return 0

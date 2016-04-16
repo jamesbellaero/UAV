@@ -22,16 +22,17 @@ class AvoidanceSystem:
 
 		count = 0
 
-		while (count < 3):
+		while count < 3:
 
 			sleep(0.5)
 
 			count = count + 1 if STARTING_ALT <= self.plane.loc.alt else 0
 
-		while (not closed):
+		while not closed:
 
-			if (active):
+			if active:
 
+				pass
 				#TODO
 
 			sleep(0.1)

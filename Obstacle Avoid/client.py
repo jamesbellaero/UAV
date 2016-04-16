@@ -23,11 +23,11 @@ class BaseClient(object):
 
         message = self.socket.recv(length)
 
-        if (message):
+        if message:
 
             message_count += 1
 
-            if (message_count % 10 == 0):
+            if message_count % 10 == 0:
 
                 send('ping')
 
@@ -58,6 +58,7 @@ class IncomingClient(BaseClient):
 
     def _process_initial_messages(self):
     
+        pass
         # TODO
 
     def _process_messages(self):
@@ -66,8 +67,9 @@ class IncomingClient(BaseClient):
         in_initial.start()
         in_initial.join()
 
-        while (not self.closed):
+        while not self.closed:
 
+            pass
             # TODO
 
 class OutgoingClient(BaseClient):
@@ -104,18 +106,18 @@ class OutgoingClient(BaseClient):
         @self.plane.vehicle.on_attribute('commands')
         def send_waypoints(self_, name, value):
 
-            if (not self.closed):
+            if not self.closed:
 
                 waypoint_string = value
                 length_string = 'w%8.0f' % len(waypoint_string)
 
-                queue.add(((length_string, 8), (waypoint_string, 'TODO: find length')))
+                queue.add((length_string, 8, waypoint_string, 'TODO: find length'))
 
-        while (not has_started):
+        while not has_started:
 
             sleep(0.1)
 
-        while (not self.closed):
+        while not self.closed:
 
             next_wp = self.plane.next_wp
             loc = self.plane.loc
@@ -127,29 +129,29 @@ class OutgoingClient(BaseClient):
             telemetry_string = '%3.0f%12.8f%12.8f%8.3f%6.3f%7.3f' % (next_wp, loc.lat,
                     loc.lon, loc.alt, heading, pitch, airspeed)
 
-            queue.add(((time_string, 8), (telemetry_string, 48)))
+            queue.add((time_string, 8, telemetry_string, 48))
 
             sleep(0.1)
 
     def _sending_thread(self):
 
-        while (not self.closed):
+        while not self.closed:
 
-            if (self.can_send):
+            if self.can_send:
 
                 messages = queue.get()
 
                 lengths_match = True
 
-                for (message in messages):
+                for message in messages:
 
-                    if (not len(message[0]) == message[1]):
+                    if not len(message[0]) == message[1]:
 
                         lengths_match = False
 
-                if (lengths_match):
+                if lengths_match:
 
-                    for (message in messages):
+                    for message in messages:
 
                         send(message[0])
 
@@ -157,7 +159,7 @@ class OutgoingClient(BaseClient):
 
     def start_sending(self):
 
-        if (not has_started):
+        if not has_started:
 
             self.start_time = time()
             has_started = True
