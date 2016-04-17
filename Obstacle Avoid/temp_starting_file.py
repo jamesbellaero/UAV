@@ -1,4 +1,4 @@
-from plane import plane
+from plane import Plane
 
 from time import sleep
 
