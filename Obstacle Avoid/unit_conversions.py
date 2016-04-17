@@ -66,7 +66,7 @@ def meters(feet):
 def knots(meters_per_second):
     """Converts a speed in meters per second to knots."""
 
-    return meters_per_second * 1.94384
+    return meters_per_second / 0.514444
 
 def meters_per_second(knots):
     """Converts a speed in knots to meters per second."""
