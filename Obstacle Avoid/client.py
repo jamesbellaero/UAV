@@ -94,7 +94,7 @@ class OutgoingClient(BaseClient):
     
         home_loc = self.plane.home_loc
 
-        string = '%12.8f%12.8f%8.3f' % (home_loc.lat, home_loc.lon, home_loc.alt)
+        string = '%11.7f,%11.7f,%8.3f' % (home_loc.lat, home_loc.lon, home_loc.alt)
         send(string, 32)
     
     def _send_messages(self):
@@ -111,7 +111,17 @@ class OutgoingClient(BaseClient):
                 waypoint_string = value
                 length_string = 'w%7.0f' % len(waypoint_string)
 
-                queue.add((length_string, 8, waypoint_string, 'TODO: find length'))
+                queue.add(((length_string, 8), (waypoint_string, len(waypoint_string))))
+
+        @self.plane.vehicle.on_attribute('mode')
+        def send_mode(self_, name, value):
+
+            if not self.closed:
+
+                mode_string = value
+                length_string = 'm%7.0f' % len(mode_string)
+
+                queue.add(((length_string, 8), (mode_string, len(mode_string))))
 
         while not has_started:
 
@@ -123,13 +133,13 @@ class OutgoingClient(BaseClient):
             loc = self.plane.loc
             heading = self.plane.heading
             pitch = self.plane.pitch
-            roll = self.plane.airpseed
+            airspeed = self.plane.airpseed
 
             time_string = 't%7.2f' % self.time
-            telemetry_string = '%3.0f,%11.7f,%11.7f,%6.3f,%6.3f,%6.2f' % (next_wp, loc.lat,
-                    loc.lon, loc.alt, heading, pitch, airspeed)
+            telemetry_string = '%3.0f,%11.7f,%11.7f,%6.3f,%6.3f,%6.2f' % (next_wp,
+                    loc.lat, loc.lon, loc.alt, heading, pitch, airspeed)
 
-            queue.add((time_string, 8, telemetry_string, 48))
+            queue.add(((time_string, 8), (telemetry_string, 48)))
 
             sleep(0.1)
 
