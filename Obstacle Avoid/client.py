@@ -109,7 +109,7 @@ class OutgoingClient(BaseClient):
             if not self.closed:
 
                 waypoint_string = value
-                length_string = 'w%8.0f' % len(waypoint_string)
+                length_string = 'w%7.0f' % len(waypoint_string)
 
                 queue.add((length_string, 8, waypoint_string, 'TODO: find length'))
 
@@ -126,7 +126,7 @@ class OutgoingClient(BaseClient):
             roll = self.plane.airpseed
 
             time_string = 't%7.2f' % self.time
-            telemetry_string = '%3.0f%12.8f%12.8f%8.3f%6.3f%7.3f' % (next_wp, loc.lat,
+            telemetry_string = '%3.0f,%11.7f,%11.7f,%6.3f,%6.3f,%6.2f' % (next_wp, loc.lat,
                     loc.lon, loc.alt, heading, pitch, airspeed)
 
             queue.add((time_string, 8, telemetry_string, 48))
