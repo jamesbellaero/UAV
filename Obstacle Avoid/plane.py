@@ -6,6 +6,7 @@ from client import IncomingClient, OutgoingClient
 from avoidance import AvoidanceSystem
 
 from math import tan
+from time import sleep
 
 BANKING_ANGLE = 0.53260
 ACCEL_GRAV = 9.80665
@@ -20,6 +21,17 @@ class Plane(object):
         self.out_client = OutgoingClient(self)
     
         self.avoid_sys = AvoidanceSystem(self)
+
+    def close(self):
+
+        self.in_client.close()
+        self.out_client.close()
+
+        self.avoid_sys.close()
+
+        sleep(1)
+
+        self.vehicle.close()
 
     @property
     def airspeed(self):
@@ -45,6 +57,11 @@ class Plane(object):
     def turning_radius(self):
         
         return self.airspeed ** 2 / ACCEL_GRAV / tan(BANKING_ANGLE)
+    
+    @property
+    def mode(self):
+
+        return self.vehicle.mode.name
     
     @property
     def commands(self):

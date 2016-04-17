@@ -104,21 +104,21 @@ class OutgoingClient(BaseClient):
         out_initial.join()
 
         @self.plane.vehicle.on_attribute('commands')
-        def send_waypoints(self_, name, value):
+        def send_waypoints(self_, name):
 
             if not self.closed:
 
-                waypoint_string = value
+                waypoint_string = str(self.plane.commands)
                 length_string = 'w%7.0f' % len(waypoint_string)
 
                 queue.add(((length_string, 8), (waypoint_string, len(waypoint_string))))
 
         @self.plane.vehicle.on_attribute('mode')
-        def send_mode(self_, name, value):
+        def send_mode(self_, name):
 
             if not self.closed:
 
-                mode_string = value
+                mode_string = self.plane.mode
                 length_string = 'm%7.0f' % len(mode_string)
 
                 queue.add(((length_string, 8), (mode_string, len(mode_string))))
